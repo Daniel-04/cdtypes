@@ -41,6 +41,7 @@
 
 /*
 ** vec_free(&vector);
+** SAFETY: double free if used after vector creation without element insertion
 */
 #define vec_free(vec)                                                          \
   do {                                                                         \
@@ -55,7 +56,8 @@
 */
 #define vec_dbg(vec, fmt)                                                      \
   do {                                                                         \
-    putchar('[');                                                              \
+    printf("Vector (count=%zu, capacity=%zu): [", (vec)->count,                \
+           (vec)->capacity);                                                   \
     for (size_t i = 0; i < (vec)->count; i++) {                                \
       printf(fmt, (vec)->buf[i]);                                              \
       if (i < (vec)->count - 1) {                                              \
