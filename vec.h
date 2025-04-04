@@ -21,7 +21,7 @@
   do {                                                                         \
     if ((vec)->count >= (vec)->capacity) {                                     \
       (vec)->capacity = (vec)->capacity * 2 + 1;                               \
-      (vec)->buf = realloc((vec)->buf, (vec)->capacity * sizeof(element));     \
+      (vec)->buf = realloc((vec)->buf, (vec)->capacity * sizeof(*(vec)->buf)); \
     }                                                                          \
     (vec)->buf[(vec)->count] = (element);                                      \
     (vec)->count++;                                                            \
