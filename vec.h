@@ -17,7 +17,7 @@
 /*
 ** vec_push(vector, element);
 */
-#define vec_push(&vec, element)                                                 \
+#define vec_push(vec, element)                                                 \
   do {                                                                         \
     if ((vec)->count >= (vec)->capacity) {                                     \
       (vec)->capacity = (vec)->capacity * 2 + 1;                               \
@@ -43,7 +43,7 @@
 ** vec_free(&vector);
 ** SAFETY: double free if used after vector creation without element insertion
 */
-#define vec_free(&vec)                                                          \
+#define vec_free(vec)                                                          \
   do {                                                                         \
     free((vec)->buf);                                                          \
     (vec)->buf = NULL;                                                         \
