@@ -1,11 +1,13 @@
 #include "heap.h"
 #include "vec.h"
 
+int cmp(int a, int b) { return a > b; }
+
 int main() {
   // vector test
   vec_t(int) nums = {0};
   for (int i = 0; i < 10; i++) {
-    vec_append(&nums, i);
+    vec_push(&nums, i);
   }
 
   vec_dbg(&nums, "%d");
@@ -41,6 +43,29 @@ int main() {
   }
 
   heap_free(&heap);
+
+  // sort (descending)
+  const int max = 50;
+  srand(42);
+
+  heap_t(int) m_heap = {.cmp = cmp};
+  for (int i = 0; i < max; i++) {
+    heap_push(&m_heap, rand() % max);
+  }
+  heap_dbg(&m_heap, "%d");
+
+  int curr;
+  vec_t(int) s_vec = {0};
+  while ((curr = heap_pop(&m_heap, -1)) != -1) {
+    vec_push(&s_vec, curr);
+  }
+  vec_dbg(&s_vec, "%d");
+
+  heap_free(&m_heap);
+  vec_free(&s_vec);
+
+  heap_dbg(&m_heap, "%d");
+  vec_dbg(&s_vec, "%d");
 
   return 0;
 }

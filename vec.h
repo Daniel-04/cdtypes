@@ -15,9 +15,9 @@
   }
 
 /*
-** vec_append(vector, element);
+** vec_push(vector, element);
 */
-#define vec_append(vec, element)                                               \
+#define vec_push(vec, element)                                                 \
   do {                                                                         \
     if ((vec)->count >= (vec)->capacity) {                                     \
       (vec)->capacity = (vec)->capacity * 2 + 1;                               \
