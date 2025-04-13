@@ -99,7 +99,7 @@
 ** MAP_REMOVE(map, key);
 */
 #define MAP_REMOVE(map, key)                                                   \
-  do {                                                                         \
+  if ((map).count > 0) {                                                       \
     size_t _idx = (map).hash(key) % (map).capacity;                            \
     int _prev_psl = -1;                                                        \
     while ((key) != (map).buf[_idx].k && _prev_psl < (map).buf[_idx].psl) {    \
@@ -118,7 +118,7 @@
       (map).buf[_prev_idx].psl = 0;                                            \
       (map).count--;                                                           \
     }                                                                          \
-  } while (0)
+  }
 
 /*
 ** MAP_FREE(map);

@@ -70,10 +70,11 @@ int main() {
   VEC_DBG(s_vec, "%d");
 
   // map test
+  const float c = 42.93;
   MAP_T(float, int) hashmap = {.hash = nohash};
   MAP_DBG(hashmap, "%f", "%d");
+  MAP_REMOVE(hashmap, c);
 
-  const float c = 42.93;
   for (int i = 0; i < 10; i++) {
     float f = i * c;
     MAP_INSERT(hashmap, f, i);
@@ -84,6 +85,7 @@ int main() {
   printf("%f = %d\n", 5 * c, MAP_GET(hashmap, 5 * c));
   printf("%f = %d\n", 10 * c, MAP_GET(hashmap, 10 * c));
   printf("%f = %d\n", 10 * c, MAP_GET(hashmap, 10 * c, -1));
+  MAP_REMOVE(hashmap, 10 * c);
 
   for (int i = 0; i < 10; i++) {
     MAP_REMOVE(hashmap, i * c);
