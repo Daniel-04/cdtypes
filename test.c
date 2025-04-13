@@ -1,7 +1,9 @@
 #include "heap.h"
+#include "map.h"
 #include "vec.h"
 
 int cmp(int a, int b) { return a > b; }
+size_t nohash(float f) { return (size_t)f; }
 
 int main() {
   // vector test
@@ -66,6 +68,34 @@ int main() {
 
   heap_dbg(&m_heap, "%d");
   vec_dbg(&s_vec, "%d");
+
+  // map test
+  map_t(float, int) hashmap = {.hash = nohash};
+  map_dbg(&hashmap, "%f", "%d");
+
+  const float c = 42.93;
+  for (int i = 0; i < 10; i++) {
+    float f = i * c;
+    map_insert(&hashmap, f, i);
+    map_dbg(&hashmap, "%f", "%d");
+  }
+  map_dbg(&hashmap, "%f", "%d");
+
+  printf("%f = %d\n", 5 * c, map_get(&hashmap, 5 * c));
+  printf("%f = %d\n", 10 * c, map_get(&hashmap, 10 * c));
+  printf("%f = %d\n", 10 * c, map_get(&hashmap, 10 * c, -1));
+
+  for (int i = 0; i < 10; i++) {
+    map_remove(&hashmap, i * c);
+    map_dbg(&hashmap, "%f", "%d");
+  }
+
+  for (int i = 0; i < 500; i++) {
+    map_insert(&hashmap, i * c, i);
+  }
+
+  map_free(&hashmap);
+  map_dbg(&hashmap, "%f", "%d");
 
   return 0;
 }
