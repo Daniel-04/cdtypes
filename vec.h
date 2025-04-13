@@ -5,9 +5,9 @@
 #include <stdlib.h>
 
 /*
-** vec_t(type) vector = {0};
+** VEC_T(type) vector = {0};
 */
-#define vec_t(type)                                                            \
+#define VEC_T(type)                                                            \
   struct {                                                                     \
     type *buf;                                                                 \
     size_t count;                                                              \
@@ -15,9 +15,9 @@
   }
 
 /*
-** vec_push(vector, element);
+** VEC_PUSH(vector, element);
 */
-#define vec_push(vec, element)                                                 \
+#define VEC_PUSH(vec, element)                                                 \
   do {                                                                         \
     if ((vec)->count >= (vec)->capacity) {                                     \
       (vec)->capacity = (vec)->capacity * 2 + 1;                               \
@@ -27,23 +27,23 @@
     (vec)->count++;                                                            \
   } while (0)
 
-#define _get_vec_pop(_1, _2, NAME, ...) NAME
-#define _vec_pop_default(vec, default)                                         \
+#define _GET_VEC_POP(_1, _2, NAME, ...) NAME
+#define _VEC_POP_DEFAULT(vec, default)                                         \
   ((vec)->count > 0 ? (vec)->buf[--(vec)->count] : default)
-#define _vec_pop_zero(vec)                                                     \
+#define _VEC_POP_ZERO(vec)                                                     \
   ((vec)->count > 0 ? (vec)->buf[--(vec)->count] : (typeof(*(vec)->buf))0)
 /*
-** vec_pop(&vector);
-** vec_pop(&vector, default);
+** VEC_POP(&vector);
+** VEC_POP(&vector, default);
 */
-#define vec_pop(...)                                                           \
-  _get_vec_pop(__VA_ARGS__, _vec_pop_default, _vec_pop_zero)(__VA_ARGS__)
+#define VEC_POP(...)                                                           \
+  _GET_VEC_POP(__VA_ARGS__, _VEC_POP_DEFAULT, _VEC_POP_ZERO)(__VA_ARGS__)
 
 /*
-** vec_free(&vector);
+** VEC_FREE(&vector);
 ** SAFETY: double free if used after vector creation without element insertion
 */
-#define vec_free(vec)                                                          \
+#define VEC_FREE(vec)                                                          \
   do {                                                                         \
     free((vec)->buf);                                                          \
     (vec)->buf = NULL;                                                         \
@@ -52,9 +52,9 @@
   } while (0)
 
 /*
-** vec_dbg(&vector, format)
+** VEC_DBG(&vector, format)
 */
-#define vec_dbg(vec, fmt)                                                      \
+#define VEC_DBG(vec, fmt)                                                      \
   do {                                                                         \
     printf("Vector (count=%zu, capacity=%zu): [", (vec)->count,                \
            (vec)->capacity);                                                   \

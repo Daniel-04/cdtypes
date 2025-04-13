@@ -8,10 +8,10 @@
 #define FIRSTSIZE 64
 
 /*
-** map_t(key_type, val_type) hashmap = {.hash = h_function};
+** MAP_T(key_type, val_type) hashmap = {.hash = h_function};
 ** NOTE: key type must be copy-able and support (==)
 */
-#define map_t(key_type, val_type)                                              \
+#define MAP_T(key_type, val_type)                                              \
   struct {                                                                     \
     struct {                                                                   \
       key_type k;                                                              \
@@ -24,15 +24,15 @@
   }
 
 /*
-** map_insert(&map, key, value);
+** MAP_INSERT(&map, key, value);
 */
-#define map_insert(map, key, value)                                            \
+#define MAP_INSERT(map, key, value)                                            \
   do {                                                                         \
-    _map_resize(map);                                                          \
-    _map_insert(map, key, value);                                              \
+    _MAP_RESIZE(map);                                                          \
+    _MAP_INSERT(map, key, value);                                              \
   } while (0)
 
-#define _map_insert(map, key, value)                                           \
+#define _MAP_INSERT(map, key, value)                                           \
   do {                                                                         \
     size_t _idx = (map)->hash(key) % (map)->capacity;                          \
     typeof(*(map)->buf) _entry = {(key), (value), 0};                          \
@@ -48,7 +48,7 @@
     (map)->count++;                                                            \
   } while (0)
 
-#define _map_resize(map)                                                       \
+#define _MAP_RESIZE(map)                                                       \
   do {                                                                         \
     if ((map)->count >= (map)->capacity * FACTOR) {                            \
       size_t _old_capacity = (map)->capacity;                                  \
@@ -58,15 +58,15 @@
       (map)->count = 0;                                                        \
       for (size_t i = 0; i < _old_capacity; ++i) {                             \
         if (_old_buf[i].psl != 0) {                                            \
-          _map_insert(map, _old_buf[i].k, _old_buf[i].v);                      \
+          _MAP_INSERT(map, _old_buf[i].k, _old_buf[i].v);                      \
         }                                                                      \
       }                                                                        \
       free(_old_buf);                                                          \
     }                                                                          \
   } while (0)
 
-#define _get_map_get(_1, _2, _3, NAME, ...) NAME
-#define _map_get_default(map, key, default_val)                                \
+#define _GET_MAP_GET(_1, _2, _3, NAME, ...) NAME
+#define _MAP_GET_DEFAULT(map, key, default_val)                                \
   ({                                                                           \
     size_t _idx = (map)->hash(key) % (map)->capacity;                          \
     int _prev_psl = -1;                                                        \
@@ -76,7 +76,7 @@
     }                                                                          \
     ((key) == (map)->buf[_idx].k) ? (map)->buf[_idx].v : (default_val);        \
   })
-#define _map_get_zero(map, key)                                                \
+#define _MAP_GET_ZERO(map, key)                                                \
   ({                                                                           \
     size_t _idx = (map)->hash(key) % (map)->capacity;                          \
     int _prev_psl = -1;                                                        \
@@ -89,16 +89,16 @@
   })
 
 /*
-** map_get(&map, key);
-** map_get(&map, key, default);
+** MAP_GET(&map, key);
+** MAP_GET(&map, key, default);
 */
-#define map_get(...)                                                           \
-  _get_map_get(__VA_ARGS__, _map_get_default, _map_get_zero)(__VA_ARGS__)
+#define MAP_GET(...)                                                           \
+  _GET_MAP_GET(__VA_ARGS__, _MAP_GET_DEFAULT, _MAP_GET_ZERO)(__VA_ARGS__)
 
 /*
-** map_remove(&map, key);
+** MAP_REMOVE(&map, key);
 */
-#define map_remove(map, key)                                                   \
+#define MAP_REMOVE(map, key)                                                   \
   do {                                                                         \
     size_t _idx = (map)->hash(key) % (map)->capacity;                          \
     int _prev_psl = -1;                                                        \
@@ -121,10 +121,10 @@
   } while (0)
 
 /*
-** map_free(&map);
+** MAP_FREE(&map);
 ** SAFETY: double free if used after map creation without element insertion
 */
-#define map_free(map)                                                          \
+#define MAP_FREE(map)                                                          \
   do {                                                                         \
     free((map)->buf);                                                          \
     (map)->buf = NULL;                                                         \
@@ -134,9 +134,9 @@
   } while (0)
 
 /*
-** map_dbg(&map, key_format, val_format);
+** MAP_DBG(&map, key_format, val_format);
 */
-#define map_dbg(map, key_fmt, val_fmt)                                         \
+#define MAP_DBG(map, key_fmt, val_fmt)                                         \
   do {                                                                         \
     printf("Map (count=%zu, capacity=%zu, hash=%p): [", (map)->count,          \
            (map)->capacity, (void *)(map)->hash);                              \

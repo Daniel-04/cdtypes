@@ -7,13 +7,13 @@
 /*
 ** default min heap
 */
-#define _heap_default_compare(a, b) ((a) < (b))
+#define _HEAP_DEFAULT_COMPARE(a, b) ((a) < (b))
 
 /*
-** heap_t(type) heap = {0}
-** heap_t(type) heap = {.cmp = c_function}
+** HEAP_T(type) heap = {0}
+** HEAP_T(type) heap = {.cmp = c_function}
 */
-#define heap_t(type)                                                           \
+#define HEAP_T(type)                                                           \
   struct {                                                                     \
     type *buf;                                                                 \
     size_t count;                                                              \
@@ -21,15 +21,15 @@
     int (*cmp)(type a, type b);                                                \
   }
 
-#define _heap_do_compare(heap, a, b)                                           \
-  ((heap)->cmp ? (heap)->cmp(a, b) : _heap_default_compare(a, b))
+#define _HEAP_DO_COMPARE(heap, a, b)                                           \
+  ((heap)->cmp ? (heap)->cmp(a, b) : _HEAP_DEFAULT_COMPARE(a, b))
 
-#define _heap_sift_up(heap, start_index)                                       \
+#define _HEAP_SIFT_UP(heap, start_index)                                       \
   do {                                                                         \
     size_t _child_idx = (start_index);                                         \
     while (_child_idx > 0) {                                                   \
       size_t _parent_idx = (_child_idx - 1) / 2;                               \
-      if (_heap_do_compare(heap, (heap)->buf[_child_idx],                      \
+      if (_HEAP_DO_COMPARE(heap, (heap)->buf[_child_idx],                      \
                            (heap)->buf[_parent_idx])) {                        \
         typeof(*(heap)->buf) _tmp = (heap)->buf[_child_idx];                   \
         (heap)->buf[_child_idx] = (heap)->buf[_parent_idx];                    \
@@ -41,7 +41,7 @@
     }                                                                          \
   } while (0)
 
-#define _heap_sift_down(heap)                                                  \
+#define _HEAP_SIFT_DOWN(heap)                                                  \
   do {                                                                         \
     if ((heap)->count <= 1)                                                    \
       break;                                                                   \
@@ -52,12 +52,12 @@
       size_t _right_child_idx = 2 * _parent_idx + 2;                           \
       size_t _priority_idx = _parent_idx;                                      \
       if (_left_child_idx < _n &&                                              \
-          _heap_do_compare(heap, (heap)->buf[_left_child_idx],                 \
+          _HEAP_DO_COMPARE(heap, (heap)->buf[_left_child_idx],                 \
                            (heap)->buf[_priority_idx])) {                      \
         _priority_idx = _left_child_idx;                                       \
       }                                                                        \
       if (_right_child_idx < _n &&                                             \
-          _heap_do_compare(heap, (heap)->buf[_right_child_idx],                \
+          _HEAP_DO_COMPARE(heap, (heap)->buf[_right_child_idx],                \
                            (heap)->buf[_priority_idx])) {                      \
         _priority_idx = _right_child_idx;                                      \
       }                                                                        \
@@ -73,9 +73,9 @@
   } while (0)
 
 /*
-** heap_push(&heap, element);
+** HEAP_PUSH(&heap, element);
 */
-#define heap_push(heap, element)                                               \
+#define HEAP_PUSH(heap, element)                                               \
   do {                                                                         \
     if ((heap)->count >= (heap)->capacity) {                                   \
       (heap)->capacity = (heap)->capacity * 2 + 1;                             \
@@ -83,25 +83,25 @@
           (heap)->buf, (heap)->capacity * sizeof(*(heap)->buf));               \
     }                                                                          \
     (heap)->buf[(heap)->count] = (element);                                    \
-    _heap_sift_up(heap, (heap)->count);                                        \
+    _HEAP_SIFT_UP(heap, (heap)->count);                                        \
     (heap)->count++;                                                           \
   } while (0)
 
-#define _get_heap_peek(_1, _2, NAME, ...) NAME
-#define _heap_peek_default(heap, default)                                      \
+#define _GET_HEAP_PEEK(_1, _2, NAME, ...) NAME
+#define _HEAP_PEEK_DEFAULT(heap, default)                                      \
   ((heap)->count > 0 ? *(heap)->buf : (default))
-#define _heap_peek_zero(heap)                                                  \
+#define _HEAP_PEEK_ZERO(heap)                                                  \
   ((heap)->count > 0 ? *(heap)->buf : (typeof(*(heap)->buf))0)
 
 /*
-** heap_peek(&heap);
-** heap_peek(&heap, default);
+** HEAP_PEEK(&heap);
+** HEAP_PEEK(&heap, default);
 */
-#define heap_peek(...)                                                         \
-  _get_heap_peek(__VA_ARGS__, _heap_peek_default, _heap_peek_zero)(__VA_ARGS__)
+#define HEAP_PEEK(...)                                                         \
+  _GET_HEAP_PEEK(__VA_ARGS__, _HEAP_PEEK_DEFAULT, _HEAP_PEEK_ZERO)(__VA_ARGS__)
 
-#define _get_heap_pop(_1, _2, NAME, ...) NAME
-#define _heap_pop_default(heap, default)                                       \
+#define _GET_HEAP_POP(_1, _2, NAME, ...) NAME
+#define _HEAP_POP_DEFAULT(heap, default)                                       \
   ({                                                                           \
     typeof(*(heap)->buf) _result;                                              \
     int _popped = 0;                                                           \
@@ -110,7 +110,7 @@
       (heap)->count--;                                                         \
       if ((heap)->count > 0) {                                                 \
         *(heap)->buf = (heap)->buf[(heap)->count];                             \
-        _heap_sift_down(heap);                                                 \
+        _HEAP_SIFT_DOWN(heap);                                                 \
       }                                                                        \
       _popped = 1;                                                             \
     }                                                                          \
@@ -119,20 +119,20 @@
     }                                                                          \
     _result;                                                                   \
   })
-#define _heap_pop_zero(heap) _heap_pop_default(heap, (typeof(*(heap)->buf))0)
+#define _HEAP_POP_ZERO(heap) _HEAP_POP_DEFAULT(heap, (typeof(*(heap)->buf))0)
 
 /*
-** heap_pop(&heap);
-** heap_pop(&heap, default);
+** HEAP_POP(&heap);
+** HEAP_POP(&heap, default);
 */
-#define heap_pop(...)                                                          \
-  _get_heap_pop(__VA_ARGS__, _heap_pop_default, _heap_pop_zero)(__VA_ARGS__)
+#define HEAP_POP(...)                                                          \
+  _GET_HEAP_POP(__VA_ARGS__, _HEAP_POP_DEFAULT, _HEAP_POP_ZERO)(__VA_ARGS__)
 
 /*
-** heap_free(&heap);
+** HEAP_FREE(&heap);
 ** SAFETY: double free if used after heap creation without element insertion
 */
-#define heap_free(heap)                                                        \
+#define HEAP_FREE(heap)                                                        \
   do {                                                                         \
     free((heap)->buf);                                                         \
     (heap)->buf = NULL;                                                        \
@@ -142,9 +142,9 @@
   } while (0)
 
 /*
-** heap_dbg(&heap, format);
+** HEAP_DBG(&heap, format);
 */
-#define heap_dbg(heap, fmt)                                                    \
+#define HEAP_DBG(heap, fmt)                                                    \
   do {                                                                         \
     printf("Heap (count=%zu, capacity=%zu, cmp=%p): [", (heap)->count,         \
            (heap)->capacity, (void *)(heap)->cmp);                             \
