@@ -11,8 +11,7 @@
 
 /*
 ** heap_t(type) heap = {0}
-** heap_t(type) heap = {.cmp = function}
-** NOTE: int function(type a, type b);
+** heap_t(type) heap = {.cmp = c_function}
 */
 #define heap_t(type)                                                           \
   struct {                                                                     \
@@ -32,9 +31,9 @@
       size_t _parent_idx = (_child_idx - 1) / 2;                               \
       if (_heap_do_compare(heap, (heap)->buf[_child_idx],                      \
                            (heap)->buf[_parent_idx])) {                        \
-        typeof(*(heap)->buf) temp = (heap)->buf[_child_idx];                   \
+        typeof(*(heap)->buf) _tmp = (heap)->buf[_child_idx];                   \
         (heap)->buf[_child_idx] = (heap)->buf[_parent_idx];                    \
-        (heap)->buf[_parent_idx] = temp;                                       \
+        (heap)->buf[_parent_idx] = _tmp;                                       \
         _child_idx = _parent_idx;                                              \
       } else {                                                                 \
         break;                                                                 \
@@ -63,9 +62,9 @@
         _priority_idx = _right_child_idx;                                      \
       }                                                                        \
       if (_priority_idx != _parent_idx) {                                      \
-        typeof(*(heap)->buf) temp = (heap)->buf[_parent_idx];                  \
+        typeof(*(heap)->buf) _tmp = (heap)->buf[_parent_idx];                  \
         (heap)->buf[_parent_idx] = (heap)->buf[_priority_idx];                 \
-        (heap)->buf[_priority_idx] = temp;                                     \
+        (heap)->buf[_priority_idx] = _tmp;                                     \
         _parent_idx = _priority_idx;                                           \
       } else {                                                                 \
         break;                                                                 \
@@ -89,8 +88,8 @@
   } while (0)
 
 #define _get_heap_peek(_1, _2, NAME, ...) NAME
-#define _heap_peek_default(heap, default_val)                                  \
-  ((heap)->count > 0 ? *(heap)->buf : (default_val))
+#define _heap_peek_default(heap, default)                                      \
+  ((heap)->count > 0 ? *(heap)->buf : (default))
 #define _heap_peek_zero(heap)                                                  \
   ((heap)->count > 0 ? *(heap)->buf : (typeof(*(heap)->buf))0)
 
@@ -102,7 +101,7 @@
   _get_heap_peek(__VA_ARGS__, _heap_peek_default, _heap_peek_zero)(__VA_ARGS__)
 
 #define _get_heap_pop(_1, _2, NAME, ...) NAME
-#define _heap_pop_default(heap, default_val)                                   \
+#define _heap_pop_default(heap, default)                                       \
   ({                                                                           \
     typeof(*(heap)->buf) _result;                                              \
     int _popped = 0;                                                           \
@@ -116,7 +115,7 @@
       _popped = 1;                                                             \
     }                                                                          \
     if (!_popped) {                                                            \
-      _result = (default_val);                                                 \
+      _result = (default);                                                     \
     }                                                                          \
     _result;                                                                   \
   })
