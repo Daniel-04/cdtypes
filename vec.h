@@ -30,8 +30,8 @@
 #define _GET_VEC_POP(_1, _2, NAME, ...) NAME
 #define _VEC_POP_DEFAULT(vec, default)                                         \
   ((vec).count > 0 ? (vec).buf[--(vec).count] : default)
-#define _VEC_POP_ZERO(vec)                                                     \
-  ((vec).count > 0 ? (vec).buf[--(vec).count] : (typeof(*(vec).buf))0)
+#define _VEC_POP_ZERO(vec) _VEC_POP_DEFAULT(vec, (typeof(*(vec).buf))0)
+
 /*
 ** VEC_POP(vector);
 ** VEC_POP(vector, default);

@@ -77,16 +77,7 @@
     ((key) == (map).buf[_idx].k) ? (map).buf[_idx].v : (default_val);          \
   })
 #define _MAP_GET_ZERO(map, key)                                                \
-  ({                                                                           \
-    size_t _idx = (map).hash(key) % (map).capacity;                            \
-    int _prev_psl = -1;                                                        \
-    while ((key) != (map).buf[_idx].k && _prev_psl < (map).buf[_idx].psl) {    \
-      _prev_psl = (map).buf[_idx].psl;                                         \
-      _idx = (_idx + 1) % (map).capacity;                                      \
-    }                                                                          \
-    ((key) == (map).buf[_idx].k) ? (map).buf[_idx].v                           \
-                                 : (typeof((map).buf[_idx].v))0;               \
-  })
+  _MAP_GET_DEFAULT(map, key, (typeof((map).buf[_idx].v))0)
 
 /*
 ** MAP_GET(map, key);
