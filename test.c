@@ -18,7 +18,7 @@ int main() {
 
   VEC_DBG(nums, "%d");
 
-  while ((i = VEC_POP(nums, -1) != -1)) {
+  while ((i = VEC_POP(nums, -1)) != -1) {
     VEC_DBG(nums, "%d");
   }
 
