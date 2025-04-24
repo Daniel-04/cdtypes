@@ -1,5 +1,6 @@
 #include "heap.h"
 #include "map.h"
+#include "queue.h"
 #include "vec.h"
 
 int cmp(int a, int b) { return a > b; }
@@ -98,6 +99,34 @@ int main() {
 
   MAP_FREE(hashmap);
   MAP_DBG(hashmap, "%f", "%d");
+
+  // queue test
+  QUEUE_T(int) queue = {0};
+  for (int i = -7; i < 0; i++) {
+    QUEUE_PUSH_BACK(queue, i);
+  }
+
+  QUEUE_DBG(queue, "%d");
+
+  for (int i = 0; i < 7; i++) {
+    QUEUE_POP_FRONT(queue);
+    QUEUE_PUSH_BACK(queue, i);
+    printf("<- %d, %d <-: ", QUEUE_PEEK_FRONT(queue), QUEUE_PEEK_BACK(queue));
+    QUEUE_DBG(queue, "%d");
+  }
+
+  for (int i = 0; i < 10; i++) {
+    QUEUE_PUSH_FRONT(queue, i);
+    QUEUE_DBG(queue, "%d");
+  }
+  QUEUE_DBG(queue, "%d");
+
+  while ((i = QUEUE_POP_BACK(queue, -1)) != -1) {
+    QUEUE_DBG(queue, "%d");
+  }
+
+  QUEUE_FREE(queue);
+  QUEUE_DBG(queue, "%d");
 
   return 0;
 }
