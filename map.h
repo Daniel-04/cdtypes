@@ -34,8 +34,9 @@
 
 #define _MAP_INSERT(map, key, value)                                           \
   do {                                                                         \
-    size_t _idx = (map).hash(key) % (map).capacity;                            \
-    typeof(*(map).buf) _entry = {(key), (value), 0};                           \
+    __auto_type _key = key;                                                    \
+    size_t _idx = (map).hash(_key) % (map).capacity;                           \
+    typeof(*(map).buf) _entry = {(_key), (value), 0};                          \
     do {                                                                       \
       _entry.psl++;                                                            \
       if (_entry.psl > (map).buf[_idx].psl) {                                  \
@@ -68,13 +69,14 @@
 #define _GET_MAP_GET(_1, _2, _3, NAME, ...) NAME
 #define _MAP_GET_DEFAULT(map, key, default_val)                                \
   ({                                                                           \
-    size_t _idx = (map).hash(key) % (map).capacity;                            \
+    __auto_type _key = key;                                                    \
+    size_t _idx = (map).hash(_key) % (map).capacity;                           \
     int _prev_psl = -1;                                                        \
-    while ((key) != (map).buf[_idx].k && _prev_psl < (map).buf[_idx].psl) {    \
+    while ((_key) != (map).buf[_idx].k && _prev_psl < (map).buf[_idx].psl) {   \
       _prev_psl = (map).buf[_idx].psl;                                         \
       _idx = (_idx + 1) % (map).capacity;                                      \
     }                                                                          \
-    ((key) == (map).buf[_idx].k) ? (map).buf[_idx].v : (default_val);          \
+    ((_key) == (map).buf[_idx].k) ? (map).buf[_idx].v : (default_val);         \
   })
 #define _MAP_GET_ZERO(map, key)                                                \
   _MAP_GET_DEFAULT(map, key, (typeof((map).buf[_idx].v))0)
@@ -91,13 +93,14 @@
 */
 #define MAP_REMOVE(map, key)                                                   \
   if ((map).count > 0) {                                                       \
-    size_t _idx = (map).hash(key) % (map).capacity;                            \
+    __auto_type _key = key;                                                    \
+    size_t _idx = (map).hash(_key) % (map).capacity;                           \
     int _prev_psl = -1;                                                        \
-    while ((key) != (map).buf[_idx].k && _prev_psl < (map).buf[_idx].psl) {    \
+    while ((_key) != (map).buf[_idx].k && _prev_psl < (map).buf[_idx].psl) {   \
       _prev_psl = (map).buf[_idx].psl;                                         \
       _idx = (_idx + 1) % (map).capacity;                                      \
     }                                                                          \
-    if ((key) == (map).buf[_idx].k) {                                          \
+    if ((_key) == (map).buf[_idx].k) {                                         \
       size_t _prev_idx = _idx;                                                 \
       _idx = (_idx + 1) % (map).capacity;                                      \
       while ((map).buf[_idx].psl > 1) {                                        \
